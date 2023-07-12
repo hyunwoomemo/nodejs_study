@@ -10,4 +10,5 @@ const log = {
   }
 }
 
+// 내보낼 모듈 정의
 module.exports = log;
