@@ -1,9 +1,10 @@
+const cookieParser = require('cookie-parser');
 const express = require('express');
 const jwt = require('jsonwebtoken')
 
 const app = express();
 const secretText = 'superSecret';
-const refreshSecretTest = 'refreshSecret'
+const refreshSecretText = 'refreshSecret'
 
 const posts = [
   {
@@ -19,6 +20,7 @@ const posts = [
 let refreshTokens = []
 
 app.use(express.json());
+app.use(cookieParser());
 
 
 app.post('/login', (req, res) => {
@@ -30,7 +32,7 @@ app.post('/login', (req, res) => {
   const accessToken = jwt.sign(user, secretText, { expiresIn: '30s' });
   
   // jwt를 이용해서 refreshToken도 생성
-  const refreshToken = jwt.sign(user, refreshSecretTest, { expiresIn: '1d' });
+  const refreshToken = jwt.sign(user, refreshSecretText, { expiresIn: '1d' });
 
   // 보통 refreshToken은 데이터베이스에 저장한다고 한다.
   refreshTokens.push(refreshToken)
@@ -63,6 +65,26 @@ function authMiddleware(req, res, next) {
   })
 }
 
+app.get('/refresh', (req, res) => {
+  const cookies = req.cookies
+  if (!cookies?.jwt) return res.sendStatus(401); 
+
+  const refreshToken = cookies.jwt
+  // refreshToken이 데이터베이스에 있는 토큰인지 확인 (여기서는 배열을 확인)
+  if (!refreshTokens.includes(refreshToken)) {
+    return res.sendStatus(403)
+  }
+
+  // 토큰이 유효한 토큰인지 확인
+  jwt.verify(refreshToken, refreshSecretText, (err, user) => {
+    if (err) return res.sendStatus(403)
+    // accessToken을 생성
+    const accessToken = jwt.sign({ name: user.name }, secretText, { expiresIn: '30s' })
+    
+    res.json({accessToken})
+  })
+
+})
 
 const port = 4000;
 
