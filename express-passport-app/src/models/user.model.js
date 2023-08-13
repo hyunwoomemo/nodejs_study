@@ -40,13 +40,11 @@ userSchema.pre('save', function (next) {
 userSchema.methods.comparePassword = function (plainPassword, cb) {
   // bcrypt compare 비교
   // plain password => clint, this.password => 데이터베이스에 있는 비밀번호
-  if (plainPassword === this.password) {
-    cb(null, true)
-  } else {
-    cb(null, false)
-  }
 
-  return cb({ error: 'error' });
+  bcrypt.compare(plainPassword, this.password, function (err, isMatch) {
+    if (err) return cb(err);
+    cb(null, isMatch)
+  })
 }
 
 const User = mongoose.model('User', userSchema);
