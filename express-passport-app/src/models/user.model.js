@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const bcrypt = require('bcryptjs')
 
 const userSchema = mongoose.Schema({
   email: {
@@ -16,6 +17,25 @@ const userSchema = mongoose.Schema({
     sparse: true,
   }
 })
+
+const saltRounds = 10
+userSchema.pre('save', function (next) {
+  let user = this;
+  // 비밀번호가 변경될 때만
+  if (user.isModified('password')) {
+    // salt를 생성합니다.
+    bcrypt.genSalt(saltRounds, function (err, salt) {
+      if (err) return next(err);
+
+      bcrypt.hash(user.password, salt, function (err, hash) {
+        if (err) return next(err);
+        user.password = hash;
+        next();
+      })
+    })
+  }
+})
+
 
 userSchema.methods.comparePassword = function (plainPassword, cb) {
   // bcrypt compare 비교

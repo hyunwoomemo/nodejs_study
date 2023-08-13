@@ -5,8 +5,8 @@ const path = require('path')
 const User = require('./models/user.model')
 const passport = require('passport')
 const cookieSession = require('cookie-session')
-
 const cookieEncryptionKey = 'superSecret'
+const {checkAuthenticated, checkNotAuthenticated} = require('./middlewares/auth')
 
 app.use(cookieSession({
   name: 'cookie-session-name',
@@ -50,18 +50,20 @@ mongoose.connect(`mongodb+srv://hyunwoomemo:qlalf1324@ayaan.0aerlae.mongodb.net/
     console.log(err)
   })
 
-// app.use('/static', express.static(path.join(__dirname, 'public')))
+app.use('/static', express.static(path.join(__dirname, 'public')))
 
-app.get('/', (req, res) => {
+app.get('/', checkAuthenticated, (req, res) => {
+  console.log(checkAuthenticated)
   res.render('index')
 })
 
-app.get('/login', (req, res) => {
+app.get('/login', checkNotAuthenticated,(req, res) => {
   res.render('login');
 })
 
 app.post('/login', (req, res, next) => {
   console.log('1')
+  console.log(req.body)
   passport.authenticate('local', (err, user, info) => {
     console.log('2')
     if (err) {
@@ -79,7 +81,14 @@ app.post('/login', (req, res, next) => {
   })(req, res, next)
 })
 
-app.get('/signup', (req, res) => {
+app.post('/logout', (req, res, next) => {
+  req.logout(function (err) {
+    if (err) { return next(err) }
+    res.redirect('/login')
+  } )
+})
+
+app.get('/signup', checkNotAuthenticated,(req, res) => {
   res.render('signup');
 })
 
