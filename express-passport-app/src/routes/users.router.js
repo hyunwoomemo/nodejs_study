@@ -3,6 +3,7 @@ const usersRouter = express.Router();
 const { checkNotAuthenticated, checkAuthenticated } = require('../middleware/auth');
 const User = require('../models/user.model');
 const passport = require('passport');
+const sendMail = require('../mail/mail');
 
 usersRouter.post('/login', (req, res, next) => {
   console.log('1')
@@ -38,7 +39,10 @@ usersRouter.post('/signup', async (req, res, next) => {
   try {
     // user 컬렉션에 유저를 저장
     await user.save();
-    return res.status(200).json({ success: true})
+    
+    //이메일 보내기
+    sendMail('hyunwoomemo@gmail.com', 'hyunwoo', 'welcome');
+    return res.status(200).redirect('/login')
   }
   catch (err) {
     console.error(err)
