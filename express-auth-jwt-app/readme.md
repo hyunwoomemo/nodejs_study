@@ -4,7 +4,11 @@
 
 ### 설치한 라이브러리
 
-`cookie-parser`, `express`, `jsonwebtoken`, `nodemon`
+`dependencies`
+- cookie-parser
+- express
+- jsonwebtoken
+- nodemon
 
 - 로그인할 때 accessToken과 refreshToken 생성해서 각각 로컬스토리지와 쿠키에 저장
 - 특정 서비스에 접속할 때 토큰을 인증하는 authMiddleware 정의
