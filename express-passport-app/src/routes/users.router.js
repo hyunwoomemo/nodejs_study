@@ -1,6 +1,5 @@
 const express = require('express');
 const usersRouter = express.Router();
-const { checkNotAuthenticated, checkAuthenticated } = require('../middleware/auth');
 const User = require('../models/user.model');
 const passport = require('passport');
 const sendMail = require('../mail/mail');
@@ -54,5 +53,11 @@ usersRouter.get('/google/callback', passport.authenticate('google', {
   successReturnToOrRedirect: '/',
   failureRedirect: '/login',
 }))
+
+usersRouter.get('/kakao', passport.authenticate('kakao'));
+usersRouter.get('/kakao/callback', passport.authenticate('kakao', {
+  successReturnToOrRedirect: '/',
+  failureRedirect: '/login'
+}));
 
 module.exports = usersRouter;
