@@ -29,7 +29,7 @@ app.use((req, res, next) => {
 });
 
 
-
+// next error 처리
 app.get('/', (req, res, next) => {
     setImmediate(() => { next( new Error('it is an error')); })
     // res.render('index', {
