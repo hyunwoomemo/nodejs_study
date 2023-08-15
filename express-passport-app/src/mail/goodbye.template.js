@@ -1,4 +1,4 @@
-const welcome = (data) => {
+const goodbye = (data) => {
   return `
   <!DOCTYPE html>
   <html>
@@ -13,3 +13,5 @@ const welcome = (data) => {
   </html>
   `
 }
+
+module.exports = goodbye
